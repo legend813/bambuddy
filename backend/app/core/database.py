@@ -1511,6 +1511,23 @@ async def run_migrations(conn):
         "CREATE INDEX IF NOT EXISTS ix_library_files_source_url ON library_files(source_url)",
     )
 
+    # Migration: Soft-delete column for trash bin (Issue #1008). Indexed so the
+    # sweeper's "SELECT ... WHERE deleted_at < cutoff" and the trash list's
+    # "WHERE deleted_at IS NOT NULL" stay cheap as the table grows.
+    #
+    # ``DATETIME`` is a SQLite-only type alias — PostgreSQL rejects it as
+    # invalid syntax, _safe_execute swallows the error, and the column is
+    # never added (breaking every query that references it). Emit
+    # dialect-appropriate SQL so both backends get the column.
+    if is_sqlite():
+        await _safe_execute(conn, "ALTER TABLE library_files ADD COLUMN deleted_at DATETIME")
+    else:
+        await _safe_execute(conn, "ALTER TABLE library_files ADD COLUMN deleted_at TIMESTAMP")
+    await _safe_execute(
+        conn,
+        "CREATE INDEX IF NOT EXISTS ix_library_files_deleted_at ON library_files(deleted_at)",
+    )
+
     # Seed default settings keys that must exist on fresh install
     default_settings = [
         ("advanced_auth_enabled", "false"),
@@ -1710,6 +1727,24 @@ async def seed_default_groups():
                 logger.info("Added makerworld:view to group '%s' (has library:read)", group.name)
             if changed:
                 group.permissions = perms
+        await session.commit()
+
+        # Backfill library:purge + archives:purge for the Administrators group
+        # on existing installs. Both permissions were added after Administrators
+        # was first seeded, so upgrading users miss them even though the default
+        # config (ALL_PERMISSIONS) includes them for fresh installs.
+        result = await session.execute(select(Group).where(Group.name == "Administrators"))
+        admin_group = result.scalar_one_or_none()
+        if admin_group and admin_group.permissions is not None:
+            perms = list(admin_group.permissions)
+            added = False
+            for new_perm in ("library:purge", "archives:purge"):
+                if new_perm not in perms:
+                    perms.append(new_perm)
+                    added = True
+                    logger.info("Added %s to Administrators group (backfill)", new_perm)
+            if added:
+                admin_group.permissions = perms
         await session.commit()
 
         # Migrate existing users to groups if they're not already in any group
