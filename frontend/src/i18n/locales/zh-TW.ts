@@ -3936,6 +3936,10 @@ export default {
       title: '自動派發',
       description: '新增到佇列時自動開始列印。關閉後，列印任務等待手動派發。',
     },
+    tailscaleDisabled: {
+      title: 'Tailscale 整合',
+      description: '啟用時使用 Tailscale 可信 TLS 憑證；停用時僅使用自簽憑證。',
+    },
     setupRequired: {
       title: '需要設定',
       description: '虛擬印表機功能需要額外的系統設定才能工作。包括埠轉發、防火牆規則和平臺特定設定。',
@@ -3946,9 +3950,6 @@ export default {
       notAvailable: 'Tailscale 未啟用',
       trustedCert: "Let's Encrypt 憑證 — 無需設定 CA",
       notAvailableHint: '安裝 Tailscale 以取得受信任的 TLS 憑證',
-      disableTitle: '停用 Tailscale 整合',
-      enabledHint: '自動偵測 Tailscale，可用時使用 Let\'s Encrypt 憑證',
-      disabledHint: 'Tailscale 已停用 — 使用自簽憑證',
     },
     howItWorks: {
       title: '工作原理',

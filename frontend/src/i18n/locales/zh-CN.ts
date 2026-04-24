@@ -3936,6 +3936,10 @@ export default {
       title: '自动派发',
       description: '添加到队列时自动开始打印。关闭后，打印任务等待手动派发。',
     },
+    tailscaleDisabled: {
+      title: 'Tailscale 集成',
+      description: '启用时使用 Tailscale 可信 TLS 证书；禁用时仅使用自签名证书。',
+    },
     setupRequired: {
       title: '需要设置',
       description: '虚拟打印机功能需要额外的系统配置才能工作。包括端口转发、防火墙规则和平台特定设置。',
@@ -3946,9 +3950,6 @@ export default {
       notAvailable: 'Tailscale 未激活',
       trustedCert: "Let's Encrypt 证书 — 无需配置 CA",
       notAvailableHint: '安装 Tailscale 以获取受信任的 TLS 证书',
-      disableTitle: '禁用 Tailscale 集成',
-      enabledHint: '自动检测 Tailscale，可用时使用 Let\'s Encrypt 证书',
-      disabledHint: 'Tailscale 已禁用 — 使用自签名证书',
     },
     howItWorks: {
       title: '工作原理',

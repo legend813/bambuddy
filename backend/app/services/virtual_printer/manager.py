@@ -387,11 +387,17 @@ class VirtualPrinterInstance:
             self._cert_renewal_task = None
 
     async def _cancel_restart_task(self) -> None:
-        """Cancel the cert restart task and await its completion."""
-        if self._cert_restart_task and not self._cert_restart_task.done():
-            self._cert_restart_task.cancel()
+        """Cancel the cert restart task and await its completion.
+
+        Guards against self-cancellation: _restart_for_cert_renewal calls
+        stop_server/stop_proxy which in turn call this method, so we skip
+        the cancel+await when we are already running inside that task.
+        """
+        task = self._cert_restart_task
+        if task and not task.done() and task is not asyncio.current_task():
+            task.cancel()
             try:
-                await self._cert_restart_task
+                await task
             except asyncio.CancelledError:
                 pass
             except Exception as e:

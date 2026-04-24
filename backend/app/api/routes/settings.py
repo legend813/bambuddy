@@ -985,7 +985,9 @@ async def update_virtual_printer_settings(
     if tailscale_disabled is not None:
         await set_setting(db, "virtual_printer_tailscale_disabled", "true" if tailscale_disabled else "false")
 
-    # Propagate tailscale_disabled to the first VirtualPrinter row so sync_from_db() picks it up
+    # Propagate tailscale_disabled to the first VirtualPrinter row so sync_from_db() picks it up.
+    # This legacy endpoint mirrors every other field: it operates on a single "default" VP,
+    # consistent with the pre-multi-VP era. Per-VP control lives in the multi-VP PUT route.
     if tailscale_disabled is not None:
         from backend.app.models.virtual_printer import VirtualPrinter as VPModel
 

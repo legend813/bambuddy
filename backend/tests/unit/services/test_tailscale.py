@@ -757,3 +757,27 @@ class TestCertRenewalLoop:
             await task
 
         assert restart_scheduled[0] is True
+
+    @pytest.mark.asyncio
+    async def test_restart_for_cert_renewal_no_self_deadlock(self, instance):
+        """_restart_for_cert_renewal must not deadlock when stop_server calls _cancel_restart_task.
+
+        Flow under test:
+          _cert_restart_task = create_task(_restart_for_cert_renewal())
+          → _restart_for_cert_renewal calls stop_server()
+          → stop_server calls _cancel_restart_task()
+          → without the current_task guard this would cancel+await itself (deadlock/RuntimeError)
+        """
+
+        async def stop_with_cancel():
+            # Simulate the real stop_server which calls _cancel_restart_task
+            await instance._cancel_restart_task()
+
+        instance.stop_server = AsyncMock(side_effect=stop_with_cancel)
+        instance.start_server = AsyncMock()
+
+        task = asyncio.create_task(instance._restart_for_cert_renewal())
+        instance._cert_restart_task = task
+
+        # If the self-deadlock guard is missing this raises TimeoutError or RuntimeError
+        await asyncio.wait_for(task, timeout=2.0)

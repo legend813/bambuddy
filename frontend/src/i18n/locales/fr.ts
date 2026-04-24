@@ -3871,6 +3871,10 @@ export default {
       title: 'Lancement automatique',
       description: 'Lancer automatiquement les impressions ajoutées à la file. Désactivé, les impressions attendent un lancement manuel.',
     },
+    tailscaleDisabled: {
+      title: 'Intégration Tailscale',
+      description: 'Activé : utilise Tailscale pour les certificats TLS de confiance. Désactivé : certificat auto-signé uniquement.',
+    },
     setupRequired: {
       title: 'Configuration requise',
       description: 'Nécessite des réglages système (ports, pare-feu).',
@@ -3881,9 +3885,6 @@ export default {
       notAvailable: 'Tailscale inactif',
       trustedCert: "Certificat Let's Encrypt — aucune configuration CA requise",
       notAvailableHint: 'Installez Tailscale pour des certificats TLS approuvés',
-      disableTitle: 'Désactiver l\'intégration Tailscale',
-      enabledHint: 'Détecter Tailscale automatiquement et utiliser le certificat Let\'s Encrypt si disponible',
-      disabledHint: 'Tailscale désactivé — certificat auto-signé utilisé',
     },
     howItWorks: {
       title: 'Fonctionnement',

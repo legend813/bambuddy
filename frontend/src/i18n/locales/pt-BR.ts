@@ -3884,6 +3884,10 @@ export default {
       title: 'Envio automático',
       description: 'Iniciar impressões automaticamente quando adicionadas à fila. Quando desativado, as impressões aguardam envio manual.',
     },
+    tailscaleDisabled: {
+      title: 'Integração Tailscale',
+      description: 'Ativado: usa Tailscale para certificados TLS confiáveis. Desativado: apenas certificado autoassinado.',
+    },
     setupRequired: {
       title: 'Configuração Necessária',
       description: 'O recurso de impressora virtual requer configuração adicional do sistema antes de funcionar. Isso inclui encaminhamento de portas, regras de firewall e configurações específicas da plataforma.',
@@ -3894,9 +3898,6 @@ export default {
       notAvailable: 'Tailscale inativo',
       trustedCert: "Certificado Let's Encrypt — sem configuração de CA necessária",
       notAvailableHint: 'Instale o Tailscale para certificados TLS confiáveis',
-      disableTitle: 'Desativar integração com Tailscale',
-      enabledHint: 'Detectar Tailscale automaticamente e usar certificado Let\'s Encrypt quando disponível',
-      disabledHint: 'Tailscale desativado — usando certificado autoassinado',
     },
     howItWorks: {
       title: 'Como funciona',

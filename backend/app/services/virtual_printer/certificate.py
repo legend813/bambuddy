@@ -8,11 +8,17 @@ The CA certificate is persistent and only regenerated if missing or expired.
 This allows users to add the CA to their slicer's trust store once.
 """
 
+from __future__ import annotations
+
 import logging
 import socket
 from datetime import datetime, timedelta, timezone
 from ipaddress import IPv4Address
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.app.services.virtual_printer.tailscale import TailscaleService
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -345,7 +351,7 @@ class CertificateService:
     async def use_tailscale_cert(
         self,
         fqdn: str,
-        tailscale_svc: object,
+        tailscale_svc: TailscaleService,
     ) -> tuple[Path, Path] | None:
         """Attempt to provision a Tailscale LE cert for fqdn.
 
